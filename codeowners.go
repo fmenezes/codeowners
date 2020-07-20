@@ -13,7 +13,7 @@ var DefaultLocations = [...]string{"CODEOWNERS", "docs/CODEOWNERS", ".github/COD
 // Decoder providers functionality to read CODEOWNERS data
 type Decoder struct {
 	scanner *bufio.Scanner
-	line    *string
+	line    string
 	done    bool
 }
 
@@ -21,7 +21,7 @@ type Decoder struct {
 func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{
 		scanner: bufio.NewScanner(r),
-		line:    nil,
+		line:    "",
 		done:    false,
 	}
 }
@@ -30,10 +30,11 @@ func NewDecoder(r io.Reader) *Decoder {
 func (s *Decoder) peek() {
 	if !s.scanner.Scan() {
 		s.done = true
+		return
 	}
 	line := sanitiseLine(s.scanner.Text())
-	s.line = &line
-	if len(*s.line) == 0 && !s.done {
+	s.line = line
+	if len(s.line) == 0 && !s.done {
 		s.peek()
 	}
 }
@@ -47,16 +48,18 @@ func sanitiseLine(line string) string {
 	return strings.Trim(line, " ")
 }
 
-// More returns if there are available CODEOWNERS lines to be scanned
+// More returns true if there are available CODEOWNERS lines to be scanned.
+// And also advances to the next line.
 func (s *Decoder) More() bool {
 	s.peek()
 	return !s.done
 }
 
 // Token parses the next available line in the CODEOWNERS file.
+// If More was never called it will return an empty token.
 // After end of file Token will always return the last line.
 func (s *Decoder) Token() Token {
-	line := strings.ReplaceAll(*s.line, "\\ ", "\\s")
+	line := strings.ReplaceAll(s.line, "\\ ", "\\s")
 
 	data := strings.Split(line, " ")
 
