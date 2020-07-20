@@ -9,7 +9,7 @@ import (
 )
 
 func exec(input string) ([][]string, int) {
-	scanner := codeowners.New(strings.NewReader(input))
+	scanner := codeowners.NewDecoder(strings.NewReader(input))
 	got := [][]string{}
 	c := 0
 	for scanner.More() {

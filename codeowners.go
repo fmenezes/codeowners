@@ -17,8 +17,8 @@ type Decoder struct {
 	done    bool
 }
 
-// New generates a new CodeOwnersScanner instance. The reader should be a reader containing the contents of the CODEOWNERS file
-func New(r io.Reader) *Decoder {
+// NewDecoder generates a new CodeOwnersScanner instance. The reader should be a reader containing the contents of the CODEOWNERS file
+func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{
 		scanner: bufio.NewScanner(r),
 		line:    nil,
@@ -26,6 +26,7 @@ func New(r io.Reader) *Decoder {
 	}
 }
 
+// peek will scan the next line
 func (s *Decoder) peek() {
 	if !s.scanner.Scan() {
 		s.done = true
@@ -37,6 +38,7 @@ func (s *Decoder) peek() {
 	}
 }
 
+// sanitiseLine removes all empty space and comments from a given line
 func sanitiseLine(line string) string {
 	i := strings.Index(line, "#")
 	if i >= 0 {
@@ -51,7 +53,8 @@ func (s *Decoder) More() bool {
 	return !s.done
 }
 
-// Token parses the next available line in the CODEOWNERS file
+// Token parses the next available line in the CODEOWNERS file.
+// After end of file Token will always return the last line.
 func (s *Decoder) Token() Token {
 	line := strings.ReplaceAll(*s.line, "\\ ", "\\s")
 
