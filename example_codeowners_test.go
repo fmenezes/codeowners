@@ -8,7 +8,7 @@ import (
 )
 
 func Example() {
-	codeownerDecoder := codeowners.New(strings.NewReader(`* test@example.org`))
+	codeownerDecoder := codeowners.NewDecoder(strings.NewReader(`* test@example.org`))
 	for codeownerDecoder.More() {
 		token := codeownerDecoder.Token()
 		fmt.Printf("File Pattern: %s\n", token.Path())

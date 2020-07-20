@@ -9,12 +9,12 @@ import (
 )
 
 func exec(input string) ([][]string, int) {
-	scanner := codeowners.New(strings.NewReader(input))
+	decoder := codeowners.NewDecoder(strings.NewReader(input))
 	got := [][]string{}
 	c := 0
-	for scanner.More() {
+	for decoder.More() {
 		c++
-		token := scanner.Token()
+		token := decoder.Token()
 		got = append(got, append([]string{token.Path()}, token.Owners()...))
 	}
 	return got, c
@@ -89,4 +89,35 @@ func TestNoOwners(t *testing.T) {
 	assert(t, `*`, [][]string{
 		{"*"},
 	})
+}
+
+func TestLastToken(t *testing.T) {
+	decoder := codeowners.NewDecoder(strings.NewReader(`filepattern @owner`))
+	if !decoder.More() {
+		t.Error("More should be true")
+	}
+	for i := 0; i < 3; i++ { //calling 3 times to prove it always returns the last line
+		token := decoder.Token()
+		if token.Path() != "filepattern" {
+			t.Error("Path should be 'filepattern'")
+		}
+		if len(token.Owners()) != 1 || token.Owners()[0] != "@owner" {
+			t.Error("Owners should match ['@owner']")
+		}
+
+		if decoder.More() {
+			t.Error("More should be false")
+		}
+	}
+}
+
+func TestMoreNotCalled(t *testing.T) {
+	decoder := codeowners.NewDecoder(strings.NewReader(`filepattern @owner`))
+	token := decoder.Token()
+	if token.Path() != "" {
+		t.Error("Path should be empty")
+	}
+	if len(token.Owners()) != 0 {
+		t.Error("Owners should be empty")
+	}
 }
