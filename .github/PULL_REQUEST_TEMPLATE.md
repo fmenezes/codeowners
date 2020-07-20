@@ -1,5 +1,5 @@
 ### Description
-Add description explaning your change
+Add description explaining your change
 
 ### Check list
 - [ ] Are docs fully updated?
