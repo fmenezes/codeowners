@@ -1,6 +1,7 @@
 package codeowners_test
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -120,4 +121,19 @@ func TestMoreNotCalled(t *testing.T) {
 	if len(token.Owners()) != 0 {
 		t.Error("Owners should be empty")
 	}
+}
+
+func ExampleDecoder() {
+	decoder := codeowners.NewDecoder(strings.NewReader(`* test@example.org
+filepattern @owner`))
+	for decoder.More() {
+		token := decoder.Token()
+		fmt.Printf("File Pattern: %s\n", token.Path())
+		fmt.Printf("Owners: %v\n", token.Owners())
+	}
+	// Output:
+	// File Pattern: *
+	// Owners: [test@example.org]
+	// File Pattern: filepattern
+	// Owners: [@owner]
 }
