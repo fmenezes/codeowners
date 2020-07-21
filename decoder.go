@@ -13,7 +13,7 @@ type Decoder struct {
 	done    bool
 }
 
-// NewDecoder generates a new CodeOwnersScanner instance. The reader should be a reader containing the contents of the CODEOWNERS file
+// NewDecoder generates a new Decoder instance. The reader should contain the contents of the CODEOWNERS file
 func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{
 		scanner: bufio.NewScanner(r),
