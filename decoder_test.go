@@ -3,6 +3,7 @@ package codeowners_test
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -15,8 +16,8 @@ func exec(input string) ([][]string, int) {
 	c := 0
 	for decoder.More() {
 		c++
-		token := decoder.Token()
-		got = append(got, append([]string{token.Path()}, token.Owners()...))
+		token, line := decoder.Token()
+		got = append(got, append([]string{strconv.Itoa(line), token.Path()}, token.Owners()...))
 	}
 	return got, c
 }
@@ -33,27 +34,27 @@ func assert(t *testing.T, input string, want [][]string) {
 
 func TestSimple(t *testing.T) {
 	assert(t, `* test@example.org`, [][]string{
-		{"*", "test@example.org"},
+		{"1", "*", "test@example.org"},
 	})
 }
 
 func TestMultipleOwners(t *testing.T) {
 	assert(t, `* test@example.org @owner @company/team`, [][]string{
-		{"*", "test@example.org", "@owner", "@company/team"},
+		{"1", "*", "test@example.org", "@owner", "@company/team"},
 	})
 }
 
 func TestFilesWithSpaces(t *testing.T) {
 	assert(t, `file\ with\ spaces @owner`, [][]string{
-		{"file with spaces", "@owner"},
+		{"1", "file with spaces", "@owner"},
 	})
 }
 
 func TestMultipleLines(t *testing.T) {
 	assert(t, `* test@example.org
 file @owner`, [][]string{
-		{"*", "test@example.org"},
-		{"file", "@owner"},
+		{"1", "*", "test@example.org"},
+		{"2", "file", "@owner"},
 	})
 }
 
@@ -72,8 +73,8 @@ file @owner
 
 
 `, [][]string{
-		{"*", "test@example.org"},
-		{"file", "@owner"},
+		{"1", "*", "test@example.org"},
+		{"5", "file", "@owner"},
 	})
 }
 
@@ -81,14 +82,14 @@ func TestIgnoreComments(t *testing.T) {
 	assert(t, `* test@example.org # comment
 # comment
 file @owner`, [][]string{
-		{"*", "test@example.org"},
-		{"file", "@owner"},
+		{"1", "*", "test@example.org"},
+		{"3", "file", "@owner"},
 	})
 }
 
 func TestNoOwners(t *testing.T) {
 	assert(t, `*`, [][]string{
-		{"*"},
+		{"1", "*"},
 	})
 }
 
@@ -98,7 +99,10 @@ func TestLastToken(t *testing.T) {
 		t.Error("More should be true")
 	}
 	for i := 0; i < 3; i++ { //calling 3 times to prove it always returns the last line
-		token := decoder.Token()
+		token, line := decoder.Token()
+		if line != 1 {
+			t.Error("Line should be '1'")
+		}
 		if token.Path() != "filepattern" {
 			t.Error("Path should be 'filepattern'")
 		}
@@ -114,7 +118,7 @@ func TestLastToken(t *testing.T) {
 
 func TestMoreNotCalled(t *testing.T) {
 	decoder := codeowners.NewDecoder(strings.NewReader(`filepattern @owner`))
-	token := decoder.Token()
+	token, _ := decoder.Token()
 	if token.Path() != "" {
 		t.Error("Path should be empty")
 	}
@@ -127,13 +131,16 @@ func ExampleDecoder() {
 	decoder := codeowners.NewDecoder(strings.NewReader(`* test@example.org
 filepattern @owner`))
 	for decoder.More() {
-		token := decoder.Token()
+		token, line := decoder.Token()
+		fmt.Printf("Line: %d\n", line)
 		fmt.Printf("File Pattern: %s\n", token.Path())
 		fmt.Printf("Owners: %v\n", token.Owners())
 	}
 	// Output:
+	// Line: 1
 	// File Pattern: *
 	// Owners: [test@example.org]
+	// Line: 2
 	// File Pattern: filepattern
 	// Owners: [@owner]
 }

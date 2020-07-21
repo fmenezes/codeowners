@@ -10,6 +10,7 @@ import (
 type Decoder struct {
 	scanner *bufio.Scanner
 	line    string
+	lineNo  int
 	done    bool
 }
 
@@ -18,6 +19,7 @@ func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{
 		scanner: bufio.NewScanner(r),
 		line:    "",
+		lineNo:  0,
 		done:    false,
 	}
 }
@@ -28,9 +30,11 @@ func (d *Decoder) peek() {
 		d.done = true
 		return
 	}
-	line := sanitiseLine(d.scanner.Text())
-	d.line = line
-	if len(d.line) == 0 && !d.done {
+
+	d.line = d.scanner.Text()
+	line := sanitiseLine(d.line)
+	d.lineNo++
+	if len(line) == 0 && !d.done {
 		d.peek()
 	}
 }
@@ -54,8 +58,9 @@ func (d *Decoder) More() bool {
 // Token parses the next available line in the CODEOWNERS file.
 // If More was never called it will return an empty token.
 // After end of file Token will always return the last line.
-func (d *Decoder) Token() Token {
-	line := strings.ReplaceAll(d.line, "\\ ", "\\s")
+func (d *Decoder) Token() (Token, int) {
+	line := sanitiseLine(d.line)
+	line = strings.ReplaceAll(line, "\\ ", "\\s")
 
 	data := strings.Split(line, " ")
 
@@ -66,7 +71,7 @@ func (d *Decoder) Token() Token {
 	return Token{
 		path:   data[0],
 		owners: data[1:],
-	}
+	}, d.lineNo
 }
 
 // Token providers reading capabilities for every CODEOWNERS line
