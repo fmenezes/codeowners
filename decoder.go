@@ -28,9 +28,9 @@ func (d *Decoder) peek() {
 		d.done = true
 		return
 	}
-	line := sanitiseLine(d.scanner.Text())
-	d.line = line
-	if len(d.line) == 0 && !d.done {
+	d.line = d.scanner.Text()
+	line := sanitiseLine(d.line)
+	if len(line) == 0 && !d.done {
 		d.peek()
 	}
 }
@@ -55,7 +55,8 @@ func (d *Decoder) More() bool {
 // If More was never called it will return an empty token.
 // After end of file Token will always return the last line.
 func (d *Decoder) Token() Token {
-	line := strings.ReplaceAll(d.line, "\\ ", "\\s")
+	line := sanitiseLine(d.line)
+	line = strings.ReplaceAll(line, "\\ ", "\\s")
 
 	data := strings.Split(line, " ")
 
