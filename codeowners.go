@@ -27,15 +27,15 @@ func NewDecoder(r io.Reader) *Decoder {
 }
 
 // peek will scan the next line
-func (s *Decoder) peek() {
-	if !s.scanner.Scan() {
-		s.done = true
+func (d *Decoder) peek() {
+	if !d.scanner.Scan() {
+		d.done = true
 		return
 	}
-	line := sanitiseLine(s.scanner.Text())
-	s.line = line
-	if len(s.line) == 0 && !s.done {
-		s.peek()
+	line := sanitiseLine(d.scanner.Text())
+	d.line = line
+	if len(d.line) == 0 && !d.done {
+		d.peek()
 	}
 }
 
@@ -50,16 +50,16 @@ func sanitiseLine(line string) string {
 
 // More returns true if there are available CODEOWNERS lines to be scanned.
 // And also advances to the next line.
-func (s *Decoder) More() bool {
-	s.peek()
-	return !s.done
+func (d *Decoder) More() bool {
+	d.peek()
+	return !d.done
 }
 
 // Token parses the next available line in the CODEOWNERS file.
 // If More was never called it will return an empty token.
 // After end of file Token will always return the last line.
-func (s *Decoder) Token() Token {
-	line := strings.ReplaceAll(s.line, "\\ ", "\\s")
+func (d *Decoder) Token() Token {
+	line := strings.ReplaceAll(d.line, "\\ ", "\\s")
 
 	data := strings.Split(line, " ")
 
