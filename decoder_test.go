@@ -124,7 +124,8 @@ func TestMoreNotCalled(t *testing.T) {
 }
 
 func ExampleDecoder() {
-	decoder := codeowners.NewDecoder(strings.NewReader(`* test@example.org`))
+	decoder := codeowners.NewDecoder(strings.NewReader(`* test@example.org
+filepattern @owner`))
 	for decoder.More() {
 		token := decoder.Token()
 		fmt.Printf("File Pattern: %s\n", token.Path())
@@ -133,4 +134,6 @@ func ExampleDecoder() {
 	// Output:
 	// File Pattern: *
 	// Owners: [test@example.org]
+	// File Pattern: filepattern
+	// Owners: [@owner]
 }
