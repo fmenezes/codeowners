@@ -1,4 +1,5 @@
-![Go](https://github.com/fmenezes/codeowners/workflows/Go/badge.svg)
+[![Go](https://github.com/fmenezes/codeowners/workflows/Go/badge.svg)](https://github.com/fmenezes/codeowners/actions?query=branch%3Amaster)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fmenezes/codeowners)](https://goreportcard.com/report/github.com/fmenezes/codeowners)
 
 # CODEOWNERS Decoder
 
