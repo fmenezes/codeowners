@@ -11,6 +11,8 @@ jobs:
     name: Tag
     runs-on: ubuntu-latest
     steps:
+    - name: Set $TAG env var
+      run: echo "${{github.ref}}" | sed 's/refs\/tags\///' | xargs -I $ echo "::set-env name=TAG::$"
     - name: Create Github Release
       uses: actions/create-release@v1
       env:
