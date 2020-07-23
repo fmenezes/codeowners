@@ -20,5 +20,5 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: ${{ github.ref }}
-        body_path: docs/releases/${{ env.TAG }}.md
+        body_path: ./docs/releases/${{ env.TAG }}.md
     
