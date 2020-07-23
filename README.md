@@ -1,5 +1,6 @@
 [![Go](https://github.com/fmenezes/codeowners/workflows/Go/badge.svg)](https://github.com/fmenezes/codeowners/actions?query=branch%3Amaster)
 [![Go Report Card](https://goreportcard.com/badge/github.com/fmenezes/codeowners)](https://goreportcard.com/report/github.com/fmenezes/codeowners)
+[![Coverage](https://coveralls.io/repos/github/fmenezes/codeowners/badge.svg?branch=master)](https://coveralls.io/github/fmenezes/codeowners?branch=master)
 
 # CODEOWNERS Decoder
 
