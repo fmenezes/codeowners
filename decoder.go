@@ -59,18 +59,11 @@ func (d *Decoder) More() bool {
 // If More was never called it will return an empty token.
 // After end of file Token will always return the last line.
 func (d *Decoder) Token() (Token, int) {
-	line := sanitiseLine(d.line)
-	line = strings.ReplaceAll(line, "\\ ", "\\s")
-
-	data := strings.Split(line, " ")
-
-	for i := range data {
-		data[i] = strings.ReplaceAll(data[i], "\\s", " ")
-	}
+	pattern, owners := ParseLine(d.line)
 
 	return Token{
-		path:   data[0],
-		owners: data[1:],
+		path:   pattern,
+		owners: owners,
 	}, d.lineNo
 }
 

@@ -46,7 +46,7 @@ func TestMultipleOwners(t *testing.T) {
 
 func TestFilesWithSpaces(t *testing.T) {
 	assert(t, `file\ with\ spaces @owner`, [][]string{
-		{"1", "file with spaces", "@owner"},
+		{"1", "file\\ with\\ spaces", "@owner"},
 	})
 }
 
