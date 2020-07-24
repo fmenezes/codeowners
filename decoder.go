@@ -3,7 +3,6 @@ package codeowners
 import (
 	"bufio"
 	"io"
-	"strings"
 )
 
 // Decoder providers functionality to read CODEOWNERS data
@@ -37,15 +36,6 @@ func (d *Decoder) peek() {
 	if len(line) == 0 && !d.done {
 		d.peek()
 	}
-}
-
-// sanitiseLine removes all empty space and comments from a given line
-func sanitiseLine(line string) string {
-	i := strings.Index(line, "#")
-	if i >= 0 {
-		line = line[:i]
-	}
-	return strings.Trim(line, " ")
 }
 
 // More returns true if there are available CODEOWNERS lines to be scanned.
