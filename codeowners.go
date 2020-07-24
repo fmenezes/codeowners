@@ -9,6 +9,15 @@ import (
 // DefaultLocations provides default locations for the CODEOWNERS file
 var DefaultLocations = [...]string{"CODEOWNERS", "docs/CODEOWNERS", ".github/CODEOWNERS"}
 
+// sanitiseLine removes all empty space and comments from a given line
+func sanitiseLine(line string) string {
+	i := strings.Index(line, "#")
+	if i >= 0 {
+		line = line[:i]
+	}
+	return strings.Trim(line, " ")
+}
+
 // ParseLine parses a CODEOWNERS line into file pattern and owners
 func ParseLine(line string) (string, []string) {
 	line = sanitiseLine(line)
