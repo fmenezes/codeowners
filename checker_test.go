@@ -3,7 +3,6 @@ package codeowners_test
 import (
 	"fmt"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/fmenezes/codeowners"
@@ -60,7 +59,7 @@ func TestSeverityLevelLabels(t *testing.T) {
 }
 
 func TestSimpleCheck(t *testing.T) {
-	input := `filepattern @owner`
+	input := "./test/data/simple"
 	want := []codeowners.CheckResult{
 		{
 			LineNo:    1,
@@ -71,7 +70,7 @@ func TestSimpleCheck(t *testing.T) {
 	}
 
 	codeowners.RegisterChecker(dummyCheckerName, dummyChecker{})
-	got, err := codeowners.Check(strings.NewReader(input), dummyCheckerName)
+	got, err := codeowners.Check(input, dummyCheckerName)
 	if err != nil {
 		t.Errorf("Input %s, Error %v", input, err)
 	}
@@ -81,14 +80,13 @@ func TestSimpleCheck(t *testing.T) {
 }
 
 func ExampleCheck() {
-	contents := strings.NewReader(`filepattern`)
-	checks, err := codeowners.Check(contents, "NoOwner")
+	checks, err := codeowners.Check(".", codeowners.AvailableCheckers()...)
 	if err != nil {
-
+		panic(err)
 	}
 	for _, check := range checks {
 		fmt.Printf("%d ::%s:: %s [%s]\n", check.LineNo, check.Severity, check.Message, check.CheckName)
 	}
 	//Output:
-	//1 ::Error:: No owners specified [NoOwner]
+	//0 ::Error:: No CODEOWNERS file found [NoCodeowners]
 }
