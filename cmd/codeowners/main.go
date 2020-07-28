@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	dir := flag.String("d", ".", "Specifies the directory you want to use to lint the CODEOWNERS file")
-	format := flag.String("f", "", "Specifies the format you want to return lint results")
+	dir := flag.String("d", ".", "Directory: specifies the directory you want to use to lint the CODEOWNERS file")
+	format := flag.String("f", "", "Format: specifies the format you want to return lint results")
 	flag.Parse()
 
 	opt := options{
