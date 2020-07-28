@@ -8,7 +8,7 @@ on:
 jobs:
 
   tag:
-    name: Tag
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
 
@@ -23,15 +23,6 @@ jobs:
     - name: Generate list of changes
       run: scripts/generate_release_notes.sh > .release.md
 
-    - name: Generate build files
-      uses: thatisuday/go-cross-build@v1
-      with:
-          platforms: 'linux/amd64, darwin/amd64, windows/amd64'
-          name: 'codeowners'
-          compress: 'true'
-          dest: 'dist'
-          package: 'cmd/codeowners'
-
     - name: Create Github Release
       uses: actions/create-release@v1
       id: create-release
@@ -42,32 +33,38 @@ jobs:
         release_name: ${{ github.ref }}
         body_path: ./.release.md
 
+    - name: Export Upload URL
+      run: echo "::set-output name=upload_url::${{ steps.create-release.outputs.upload_url }}"
+
+  upload:
+    name: Upload Release Artefacts
+    needs: tag
+    strategy:
+      matrix:
+        os:
+          - linux/amd64
+          - darwin/amd64
+          - windows/amd64
+          - windows/386
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Generate build files
+      uses: thatisuday/go-cross-build@v1
+      with:
+          platforms: ${{ matrix.os }}
+          name: 'codeowners'
+          compress: 'true'
+          dest: 'dist'
+          package: 'cmd/codeowners'
+
     - name: Upload Release Asset (darwin-amd64)
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: ./dist/codeowners-darwin-amd64.tar.gz
-        asset_name: codeowners-darwin-amd64.tar.gz
-        asset_content_type: application/gzip
-
-    - name: Upload Release Asset (linux-amd64)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: ./dist/codeowners-linux-amd64.tar.gz
-        asset_name: codeowners-linux-amd64.tar.gz
-        asset_content_type: application/gzip
-
-    - name: Upload Release Asset (windows-amd64)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: ./dist/codeowners-windows-amd64.tar.gz
-        asset_name: codeowners-windows-amd64.tar.gz
+        upload_url: ${{ needs.tag.outputs.upload_url }}
+        asset_path: ./dist/codeowners-${{ matrix.os }}.tar.gz
+        asset_name: codeowners-${{ matrix.os }}.tar.gz
         asset_content_type: application/gzip
