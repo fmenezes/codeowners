@@ -12,13 +12,20 @@ func init() {
 type NoOwner struct{}
 
 // CheckLine runs this NoOwner's check against each line
-func (c NoOwner) CheckLine(lineNo int, pattern string, owners ...string) []codeowners.CheckResult {
+func (c NoOwner) CheckLine(lineNo int, line string) []codeowners.CheckResult {
 	var results []codeowners.CheckResult
+
+	_, owners := codeowners.ParseLine(line)
 
 	if len(owners) == 0 {
 		results = []codeowners.CheckResult{
 			{
-				LineNo:    lineNo,
+				Position: codeowners.Position{
+					StartLine:   lineNo,
+					EndLine:     lineNo,
+					StartColumn: 0,
+					EndColumn:   0,
+				},
 				Message:   "No owners specified",
 				Severity:  codeowners.Error,
 				CheckName: noOwnerCheckerName,

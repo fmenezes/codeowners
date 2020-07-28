@@ -1,6 +1,7 @@
 package codeowners
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -36,7 +37,7 @@ func RegisterChecker(name string, checker Checker) error {
 
 // Checker provides tools for validating CODEOWNER file contents
 type Checker interface {
-	CheckLine(lineNo int, filePattern string, owners ...string) []CheckResult
+	CheckLine(lineNo int, line string) []CheckResult
 }
 
 // SeverityLevel exposes all possible levels of severity check results
@@ -53,9 +54,32 @@ func (l SeverityLevel) String() string {
 	return [...]string{"Error", "Warning"}[l]
 }
 
+// Position provides structured way to evaluate where a given validation result is located in the CODEOWNERs file
+type Position struct {
+	StartLine   int
+	StartColumn int
+	EndLine     int
+	EndColumn   int
+}
+
+// String formats the position data
+func (p Position) String() string {
+	output := fmt.Sprintf("%d", p.StartLine)
+	if p.StartColumn >= 1 {
+		output = fmt.Sprintf("%s:%d", output, p.StartColumn)
+	}
+	if p.EndLine > p.StartLine {
+		output = fmt.Sprintf("%s-%d:%d", output, p.EndLine, p.EndColumn)
+	} else if p.StartColumn >= 1 && p.EndColumn > p.StartColumn {
+		output = fmt.Sprintf("%s-%d", output, p.EndColumn)
+	}
+
+	return output
+}
+
 // CheckResult provides structured way to evaluate results of a CODEOWNERS validation check
 type CheckResult struct {
-	LineNo    int
+	Position  Position
 	Message   string
 	Severity  SeverityLevel
 	CheckName string
@@ -76,15 +100,17 @@ func Check(directory string, checkers ...string) ([]CheckResult, error) {
 	defer file.Close()
 
 	results := []CheckResult{}
-	decoder := NewDecoder(file)
-	for decoder.More() {
-		token, lineNo := decoder.Token()
+	scanner := bufio.NewScanner(file)
+	lineNo := 0
+	for scanner.Scan() {
+		line := scanner.Text()
+		lineNo++
 		for _, checker := range checkers {
 			c, ok := availableCheckers[checker]
 			if !ok {
 				return nil, fmt.Errorf("'%s' not found", checker)
 			}
-			lineResults := c.CheckLine(lineNo, token.Path(), token.Owners()...)
+			lineResults := c.CheckLine(lineNo, line)
 			if lineResults != nil {
 				results = append(results, lineResults...)
 			}
