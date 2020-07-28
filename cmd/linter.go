@@ -34,10 +34,7 @@ func run(wr io.Writer, opt options) error {
 
 	checkers := codeowners.AvailableCheckers()
 
-	checks, err := codeowners.Check(dir, checkers...)
-	if err != nil {
-		return err
-	}
+	checks, _ := codeowners.Check(dir, checkers...)
 
 	if len(checks) > 0 {
 		err = tpl.Execute(wr, checks)

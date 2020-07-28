@@ -14,9 +14,9 @@ func testRun(opt options) (string, error) {
 	return output.String(), nil
 }
 
-func TestSimple(t *testing.T) {
+func TestPass(t *testing.T) {
 	opt := options{
-		directory: "../test/data/simple",
+		directory: "../test/data/pass",
 		format:    "",
 	}
 
@@ -34,7 +34,7 @@ func TestSimple(t *testing.T) {
 
 func TestNoOwners(t *testing.T) {
 	opt := options{
-		directory: "../test/data/noowners",
+		directory: "../test/data/no_owners",
 		format:    "",
 	}
 
@@ -77,11 +77,21 @@ func TestInvalidFormat(t *testing.T) {
 	if err == nil {
 		t.Errorf("Should have errored")
 	}
+
+	opt = options{
+		directory: "../test/data/noowners",
+		format:    "  {{ . ",
+	}
+
+	_, err = testRun(opt)
+	if err == nil {
+		t.Errorf("Should have errored")
+	}
 }
 
 func TestInvalidDirectory(t *testing.T) {
 	opt := options{
-		directory: "../test/da\\ata",
+		directory: "'",
 		format:    "",
 	}
 
