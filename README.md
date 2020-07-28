@@ -2,13 +2,13 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/fmenezes/codeowners)](https://goreportcard.com/report/github.com/fmenezes/codeowners)
 [![Coverage](https://coveralls.io/repos/github/fmenezes/codeowners/badge.svg?branch=master)](https://coveralls.io/github/fmenezes/codeowners?branch=master)
 
-# CODEOWNERS Decoder
+# CODEOWNERS
 
-CodeOwners decoder provides funcionality to evaluate CODEOWNERS file in Go.
+CodeOwners coder provides funcionality to evaluate CODEOWNERS file in Go. Also provices linter CLI.
 
 ## Documentation
 
-To find documentation follow https://godoc.org/github.com/fmenezes/codeowners
+To find package documentation follow https://godoc.org/github.com/fmenezes/codeowners
 
 ## Compatibility
 
