@@ -2,7 +2,9 @@ package codeowners
 
 import (
 	"fmt"
-	"io"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 var availableCheckers map[string]Checker
@@ -60,9 +62,21 @@ type CheckResult struct {
 }
 
 // Check evaluates the file contents against the checkers and return the results back.
-func Check(r io.Reader, checkers ...string) ([]CheckResult, error) {
+func Check(directory string, checkers ...string) ([]CheckResult, error) {
+
+	fileLocation, result := findCodeownersFile(directory)
+	if result != nil {
+		return []CheckResult{*result}, nil
+	}
+
+	file, err := os.Open(fileLocation)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
 	results := []CheckResult{}
-	decoder := NewDecoder(r)
+	decoder := NewDecoder(file)
 	for decoder.More() {
 		token, lineNo := decoder.Token()
 		for _, checker := range checkers {
@@ -71,9 +85,45 @@ func Check(r io.Reader, checkers ...string) ([]CheckResult, error) {
 				return nil, fmt.Errorf("'%s' not found", checker)
 			}
 			lineResults := c.CheckLine(lineNo, token.Path(), token.Owners()...)
-			results = append(results, lineResults...)
+			if lineResults != nil {
+				results = append(results, lineResults...)
+			}
 		}
 	}
 
-	return results, nil
+	if len(results) > 0 {
+		return results, nil
+	}
+
+	return nil, nil
+}
+
+func fileExists(file string) bool {
+	info, err := os.Stat(file)
+	return !os.IsNotExist(err) && !info.IsDir()
+}
+
+func findCodeownersFile(dir string) (string, *CheckResult) {
+	codeownersLocation := ""
+
+	filesFound := []string{}
+	for _, fileLocation := range DefaultLocations {
+		currentFile := filepath.Join(dir, fileLocation)
+		if fileExists(currentFile) {
+			filesFound = append(filesFound, fileLocation)
+			if len(codeownersLocation) == 0 {
+				codeownersLocation = currentFile
+			}
+		}
+	}
+
+	if len(filesFound) == 0 {
+		return "", &CheckResult{Message: "No CODEOWNERS file found", Severity: Error, CheckName: "NoCodeowners"}
+	}
+
+	if len(filesFound) > 1 {
+		return "", &CheckResult{Message: fmt.Sprintf("Multiple CODEOWNERS files found (%s)", strings.Join(filesFound, ", ")), Severity: Warning, CheckName: "MultipleCodeowners"}
+	}
+
+	return codeownersLocation, nil
 }

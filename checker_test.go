@@ -3,7 +3,6 @@ package codeowners_test
 import (
 	"fmt"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/fmenezes/codeowners"
@@ -60,7 +59,7 @@ func TestSeverityLevelLabels(t *testing.T) {
 }
 
 func TestSimpleCheck(t *testing.T) {
-	input := `filepattern @owner`
+	input := "./test/data/pass"
 	want := []codeowners.CheckResult{
 		{
 			LineNo:    1,
@@ -71,7 +70,66 @@ func TestSimpleCheck(t *testing.T) {
 	}
 
 	codeowners.RegisterChecker(dummyCheckerName, dummyChecker{})
-	got, err := codeowners.Check(strings.NewReader(input), dummyCheckerName)
+	got, err := codeowners.Check(input, dummyCheckerName)
+	if err != nil {
+		t.Errorf("Input %s, Error %v", input, err)
+	}
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("Input %s, Want %v, Got %v", input, want, got)
+	}
+}
+
+func TestNoProblemsFound(t *testing.T) {
+	input := "./test/data/pass"
+	got, err := codeowners.Check(input)
+	if err != nil {
+		t.Errorf("Input %s, Error %v", input, err)
+	}
+	if got != nil {
+		t.Errorf("Input %s, Want %v, Got %v", input, nil, got)
+	}
+}
+
+func TestCheckerNotFound(t *testing.T) {
+	input := "./test/data/pass"
+	_, err := codeowners.Check(input, "NonExistentChecker")
+	if err == nil {
+		t.Error("Should have errored")
+	}
+}
+
+func TestNoCodeownersCheck(t *testing.T) {
+	input := "./test/data"
+	want := []codeowners.CheckResult{
+		{
+			LineNo:    0,
+			Message:   "No CODEOWNERS file found",
+			Severity:  codeowners.Error,
+			CheckName: "NoCodeowners",
+		},
+	}
+
+	got, err := codeowners.Check(input, dummyCheckerName)
+	if err != nil {
+		t.Errorf("Input %s, Error %v", input, err)
+	}
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("Input %s, Want %v, Got %v", input, want, got)
+	}
+}
+
+func TestMultipleCodeownersCheck(t *testing.T) {
+	input := "./test/data/multiple_codeowners"
+	want := []codeowners.CheckResult{
+		{
+			LineNo:    0,
+			Message:   "Multiple CODEOWNERS files found (CODEOWNERS, docs/CODEOWNERS)",
+			Severity:  codeowners.Warning,
+			CheckName: "MultipleCodeowners",
+		},
+	}
+
+	got, err := codeowners.Check(input, dummyCheckerName)
 	if err != nil {
 		t.Errorf("Input %s, Error %v", input, err)
 	}
@@ -81,14 +139,13 @@ func TestSimpleCheck(t *testing.T) {
 }
 
 func ExampleCheck() {
-	contents := strings.NewReader(`filepattern`)
-	checks, err := codeowners.Check(contents, "NoOwner")
+	checks, err := codeowners.Check(".", codeowners.AvailableCheckers()...)
 	if err != nil {
-
+		panic(err)
 	}
 	for _, check := range checks {
 		fmt.Printf("%d ::%s:: %s [%s]\n", check.LineNo, check.Severity, check.Message, check.CheckName)
 	}
 	//Output:
-	//1 ::Error:: No owners specified [NoOwner]
+	//0 ::Error:: No CODEOWNERS file found [NoCodeowners]
 }
