@@ -43,6 +43,7 @@ jobs:
       matrix:
         os:
           - linux/amd64
+          - linux/386
           - darwin/amd64
           - windows/amd64
           - windows/386
