@@ -18,6 +18,16 @@ jobs:
     - name: Set $TAG env var
       run: echo "${{github.ref}}" | sed 's/refs\/tags\///' | xargs -I $ echo "::set-env name=TAG::$"
 
+    - name: Set $PREVIOUS_TAG env var
+      run: git tag --sort=refname | grep $TAG -B 1 | grep -m1 "" | xargs -I $ echo "::set-env name=PREVIOUS_TAG::$"
+
+    - name: Generate list of changes
+      run: |
+      cat > release.md <<EOF
+## Changes
+$(git log $TAG...$PREVIOUS_TAG --format="- [%h](../../commit/%h) %s")
+EOF
+
     - name: Generate build files
       uses: thatisuday/go-cross-build@v1
       with:
@@ -35,7 +45,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: ${{ github.ref }}
-        body_path: ./docs/releases/${{ env.TAG }}.md
+        body_path: ./release.md
 
     - name: Upload Release Asset (darwin-amd64)
       uses: actions/upload-release-asset@v1
