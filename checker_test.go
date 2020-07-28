@@ -219,7 +219,7 @@ func ExampleCheck() {
 		panic(err)
 	}
 	for _, check := range checks {
-		fmt.Printf("%s ::%s:: %s [%s]\n", check.Position.String(), check.Severity, check.Message, check.CheckName)
+		fmt.Printf("%s ::%s:: %s [%s]\n", check.Position, check.Severity, check.Message, check.CheckName)
 	}
 	//Output:
 	//0 ::Error:: No CODEOWNERS file found [NoCodeowners]
