@@ -38,7 +38,6 @@ jobs:
         body_path: ./docs/releases/${{ env.TAG }}.md
 
     - name: Upload Release Asset (darwin-amd64)
-      id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,7 +48,6 @@ jobs:
         asset_content_type: application/gzip
 
     - name: Upload Release Asset (linux-amd64)
-      id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -60,7 +58,6 @@ jobs:
         asset_content_type: application/gzip
 
     - name: Upload Release Asset (windows-amd64)
-      id: upload-release-asset 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
