@@ -5,7 +5,7 @@
 
 # CODEOWNERS
 
-CodeOwners coder provides funcionality to evaluate CODEOWNERS file in Go. Also provides linter CLI.
+CodeOwners package provides funcionality to evaluate CODEOWNERS file in Go. Also provides a CLI to lint.
 
 ## Documentation
 
@@ -21,7 +21,7 @@ Simply run `go get -u github.com/fmenezes/codeowners/cmd/codeowners`
 
 #### Usage
 
-Simply calling `codeowners` will quick off the cli on the current directory.
+Simply calling `codeowners` will kick off the cli on the current directory.
 
 ##### Options
 
