@@ -42,7 +42,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
         asset_path: ./dist/codeowners-darwin-amd64.tar.gz
         asset_name: codeowners-darwin-amd64.tar.gz
         asset_content_type: application/gzip
@@ -52,7 +52,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
         asset_path: ./dist/codeowners-linux-amd64.tar.gz
         asset_name: codeowners-linux-amd64.tar.gz
         asset_content_type: application/gzip
@@ -62,7 +62,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
         asset_path: ./dist/codeowners-windows-amd64.tar.gz
         asset_name: codeowners-windows-amd64.tar.gz
         asset_content_type: application/gzip
