@@ -16,7 +16,7 @@ func testRun(opt options) (string, error) {
 
 func TestPass(t *testing.T) {
 	opt := options{
-		directory: "../test/data/pass",
+		directory: "../../test/data/pass",
 		format:    "",
 	}
 
@@ -34,7 +34,7 @@ func TestPass(t *testing.T) {
 
 func TestNoOwners(t *testing.T) {
 	opt := options{
-		directory: "../test/data/no_owners",
+		directory: "../../test/data/no_owners",
 		format:    "",
 	}
 
@@ -52,7 +52,7 @@ func TestNoOwners(t *testing.T) {
 
 func TestCustomFormat(t *testing.T) {
 	opt := options{
-		directory: "../test/data/noowners",
+		directory: "../../test/data/noowners",
 		format:    "test",
 	}
 
@@ -69,7 +69,7 @@ func TestCustomFormat(t *testing.T) {
 
 func TestInvalidFormat(t *testing.T) {
 	opt := options{
-		directory: "../test/data/noowners",
+		directory: "../../test/data/noowners",
 		format:    "  {{template \"one\"}}  ",
 	}
 
@@ -79,7 +79,7 @@ func TestInvalidFormat(t *testing.T) {
 	}
 
 	opt = options{
-		directory: "../test/data/noowners",
+		directory: "../../test/data/noowners",
 		format:    "  {{ . ",
 	}
 
