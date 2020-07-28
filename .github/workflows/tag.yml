@@ -14,6 +14,8 @@ jobs:
 
     - name: Check out code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Set $TAG env var
       run: echo "${{github.ref}}" | sed 's/refs\/tags\///' | xargs -I $ echo "::set-env name=TAG::$"
