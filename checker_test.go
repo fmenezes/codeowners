@@ -14,10 +14,13 @@ const dummyCheckerName string = "dummy"
 type dummyChecker struct {
 }
 
-func (c dummyChecker) CheckLine(lineNo int, filePath string, owners ...string) []codeowners.CheckResult {
+func (c dummyChecker) CheckLine(lineNo int, line string) []codeowners.CheckResult {
 	return []codeowners.CheckResult{
 		{
-			LineNo:    1,
+			Position: codeowners.Position{
+				StartLine: 1,
+				EndLine:   1,
+			},
 			Message:   "Dummy Error",
 			Severity:  codeowners.Error,
 			CheckName: dummyCheckerName,
@@ -58,11 +61,85 @@ func TestSeverityLevelLabels(t *testing.T) {
 	}
 }
 
+func TestPositionString(t *testing.T) {
+	testCases := []struct {
+		input codeowners.Position
+		want  string
+	}{
+		{
+			input: codeowners.Position{
+				StartLine:   1,
+				StartColumn: 1,
+				EndLine:     2,
+				EndColumn:   2,
+			},
+			want: "1:1-2:2",
+		},
+		{
+			input: codeowners.Position{
+				StartLine:   1,
+				StartColumn: 1,
+				EndLine:     1,
+				EndColumn:   2,
+			},
+			want: "1:1-2",
+		},
+		{
+			input: codeowners.Position{
+				StartLine:   1,
+				StartColumn: 1,
+				EndLine:     1,
+				EndColumn:   1,
+			},
+			want: "1:1",
+		},
+		{
+			input: codeowners.Position{
+				StartLine:   1,
+				StartColumn: 0,
+				EndLine:     1,
+				EndColumn:   0,
+			},
+			want: "1",
+		},
+		{
+			input: codeowners.Position{
+				StartLine:   1,
+				StartColumn: 0,
+				EndLine:     0,
+				EndColumn:   0,
+			},
+			want: "1",
+		},
+		{
+			input: codeowners.Position{
+				StartLine:   0,
+				StartColumn: 0,
+				EndLine:     0,
+				EndColumn:   0,
+			},
+			want: "0",
+		},
+	}
+
+	for _, testCase := range testCases {
+		got := testCase.input.String()
+		if got != testCase.want {
+			t.Errorf("Input: %v, Want: %v, Got: %v", testCase.input, testCase.want, got)
+		}
+	}
+}
+
 func TestSimpleCheck(t *testing.T) {
 	input := "./test/data/pass"
 	want := []codeowners.CheckResult{
 		{
-			LineNo:    1,
+			Position: codeowners.Position{
+				StartLine:   1,
+				StartColumn: 0,
+				EndLine:     1,
+				EndColumn:   0,
+			},
 			Message:   "Dummy Error",
 			Severity:  codeowners.Error,
 			CheckName: dummyCheckerName,
@@ -102,7 +179,6 @@ func TestNoCodeownersCheck(t *testing.T) {
 	input := "./test/data"
 	want := []codeowners.CheckResult{
 		{
-			LineNo:    0,
 			Message:   "No CODEOWNERS file found",
 			Severity:  codeowners.Error,
 			CheckName: "NoCodeowners",
@@ -122,7 +198,6 @@ func TestMultipleCodeownersCheck(t *testing.T) {
 	input := "./test/data/multiple_codeowners"
 	want := []codeowners.CheckResult{
 		{
-			LineNo:    0,
 			Message:   "Multiple CODEOWNERS files found (CODEOWNERS, docs/CODEOWNERS)",
 			Severity:  codeowners.Warning,
 			CheckName: "MultipleCodeowners",
@@ -144,7 +219,7 @@ func ExampleCheck() {
 		panic(err)
 	}
 	for _, check := range checks {
-		fmt.Printf("%d ::%s:: %s [%s]\n", check.LineNo, check.Severity, check.Message, check.CheckName)
+		fmt.Printf("%s ::%s:: %s [%s]\n", check.Position.String(), check.Severity, check.Message, check.CheckName)
 	}
 	//Output:
 	//0 ::Error:: No CODEOWNERS file found [NoCodeowners]

@@ -10,17 +10,20 @@ import (
 
 func TestNoOwnerCheck(t *testing.T) {
 	input := struct {
-		lineNo  int
-		pattern string
-		owners  []string
+		lineNo int
+		line   string
 	}{
-		lineNo:  1,
-		pattern: "filepattern",
-		owners:  []string{},
+		lineNo: 1,
+		line:   "filepattern",
 	}
 	want := []codeowners.CheckResult{
 		{
-			LineNo:    1,
+			Position: codeowners.Position{
+				StartLine:   1,
+				StartColumn: 0,
+				EndLine:     1,
+				EndColumn:   0,
+			},
 			Message:   "No owners specified",
 			Severity:  codeowners.Error,
 			CheckName: "NoOwner",
@@ -28,7 +31,7 @@ func TestNoOwnerCheck(t *testing.T) {
 	}
 
 	checker := checkers.NoOwner{}
-	got := checker.CheckLine(input.lineNo, input.pattern, input.owners...)
+	got := checker.CheckLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}

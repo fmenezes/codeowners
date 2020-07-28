@@ -20,7 +20,7 @@ func run(wr io.Writer, opt options) error {
 		return err
 	}
 
-	format := "{{range .}}{{ .LineNo }} ::{{ .Severity }}:: {{ .Message }} [{{ .CheckName }}]\n{{end}}"
+	format := "{{range .}}{{ .Position }} ::{{ .Severity }}:: {{ .Message }} [{{ .CheckName }}]\n{{end}}"
 	if len(opt.format) > 0 {
 		format = opt.format
 	}
