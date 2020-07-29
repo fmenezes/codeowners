@@ -10,6 +10,8 @@ jobs:
   tag:
     name: Create Release
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
     steps:
 
     - name: Check out code
@@ -32,9 +34,6 @@ jobs:
         tag_name: ${{ github.ref }}
         release_name: ${{ github.ref }}
         body_path: ./.release.md
-
-    - name: Export Upload URL
-      run: echo "::set-output name=upload_url::${{ steps.create-release.outputs.upload_url }}"
 
   upload:
     name: Upload Release Artefacts
