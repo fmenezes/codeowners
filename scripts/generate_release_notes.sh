@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 
-if [ -z "$TAG" ]
+if [ -z "$GITHUB_REF" ]
 then
-      echo "\$TAG is empty"
+      echo "\$GITHUB_REF is empty"
       exit 1
 fi
 
-export PREVIOUS_TAG=$(git tag --sort=refname | grep $TAG -B 1 | grep -m1 "")
+if [[ ! $GITHUB_REF = refs/tags/* ]]
+then
+      echo "\$GITHUB_REF does not start with 'refs/tags/'"
+      exit 1
+fi
+
+export PREVIOUS_TAG_REF=$(git tag --sort=refname --format='%(refname)' | grep $GITHUB_REF -B 1 | grep -m1 "")
 
 cat <<EOF
 ## Changes
-$(git log $TAG...$PREVIOUS_TAG --format="- [%h](../../commit/%h) %s")
+$(git log $GITHUB_REF...$PREVIOUS_TAG_REF --format="- [%h](../../commit/%h) %s")
 EOF

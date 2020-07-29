@@ -19,9 +19,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set $TAG env var
-      run: echo "${{github.ref}}" | sed 's/refs\/tags\///' | xargs -I $ echo "::set-env name=TAG::$"
-
     - name: Generate list of changes
       run: scripts/generate_release_notes.sh > .release.md
 
