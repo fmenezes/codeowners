@@ -1,20 +1,24 @@
 #!/usr/bin/env bash
 
-if [ -z "$GITHUB_REF" ]
+GITHUB_REF=${GITHUB_REF:-refs/heads/master}
+
+git rev-parse $GITHUB_REF > /dev/null 2>&1
+if [ $? != 0 ]
 then
-      echo "\$GITHUB_REF is empty"
+      echo "\$GITHUB_REF is invalid"
       exit 1
 fi
 
-if [[ ! $GITHUB_REF = refs/tags/* ]]
+if [[ $GITHUB_REF = refs/tags/* ]]
 then
-      echo "\$GITHUB_REF does not start with 'refs/tags/'"
-      exit 1
+      # previous tag
+      export PREVIOUS_REF=$(git tag --sort=refname --format='%(refname)' | grep $GITHUB_REF -B 1 | grep -m1 "")
+else
+      # latest tag
+      export PREVIOUS_REF=$(git tag --sort=-refname --format='%(refname)' | grep -m1 "")
 fi
-
-export PREVIOUS_TAG_REF=$(git tag --sort=refname --format='%(refname)' | grep $GITHUB_REF -B 1 | grep -m1 "")
 
 cat <<EOF
 ## Changes
-$(git log $GITHUB_REF...$PREVIOUS_TAG_REF --format="- [%h](../../commit/%h) %s")
+$(git log $GITHUB_REF...$PREVIOUS_REF --format="- [%h](../../commit/%h) %s")
 EOF
