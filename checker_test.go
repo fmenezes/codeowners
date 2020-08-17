@@ -14,12 +14,13 @@ const dummyCheckerName string = "dummy"
 type dummyChecker struct {
 }
 
-func (c dummyChecker) CheckLine(lineNo int, line string) []codeowners.CheckResult {
+func (c dummyChecker) CheckLine(file string, lineNo int, line string) []codeowners.CheckResult {
 	return []codeowners.CheckResult{
 		{
 			Position: codeowners.Position{
-				StartLine: 1,
-				EndLine:   1,
+				FilePath:  file,
+				StartLine: lineNo,
+				EndLine:   lineNo,
 			},
 			Message:   "Dummy Error",
 			Severity:  codeowners.Error,
@@ -135,6 +136,7 @@ func TestSimpleCheck(t *testing.T) {
 	want := []codeowners.CheckResult{
 		{
 			Position: codeowners.Position{
+				FilePath:    "test/data/pass/CODEOWNERS",
 				StartLine:   1,
 				StartColumn: 0,
 				EndLine:     1,

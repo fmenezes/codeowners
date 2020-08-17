@@ -43,7 +43,7 @@ func ownerValid(owner string) bool {
 }
 
 // CheckLine runs this InvalidOwner's check against each line
-func (c InvalidOwner) CheckLine(lineNo int, line string) []codeowners.CheckResult {
+func (c InvalidOwner) CheckLine(file string, lineNo int, line string) []codeowners.CheckResult {
 	var results []codeowners.CheckResult
 
 	_, owners := codeowners.ParseLine(line)
@@ -54,6 +54,7 @@ func (c InvalidOwner) CheckLine(lineNo int, line string) []codeowners.CheckResul
 		}
 		result := codeowners.CheckResult{
 			Position: codeowners.Position{
+				FilePath:    file,
 				StartLine:   lineNo,
 				EndLine:     lineNo,
 				StartColumn: strings.Index(line, owner) + 1,

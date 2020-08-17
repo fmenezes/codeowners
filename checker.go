@@ -37,7 +37,7 @@ func RegisterChecker(name string, checker Checker) error {
 
 // Checker provides tools for validating CODEOWNER file contents
 type Checker interface {
-	CheckLine(lineNo int, line string) []CheckResult
+	CheckLine(file string, lineNo int, line string) []CheckResult
 }
 
 // SeverityLevel exposes all possible levels of severity check results
@@ -56,6 +56,7 @@ func (l SeverityLevel) String() string {
 
 // Position provides structured way to evaluate where a given validation result is located in the CODEOWNERs file
 type Position struct {
+	FilePath    string
 	StartLine   int
 	StartColumn int
 	EndLine     int
@@ -110,7 +111,7 @@ func Check(directory string, checkers ...string) ([]CheckResult, error) {
 			if !ok {
 				return nil, fmt.Errorf("'%s' not found", checker)
 			}
-			lineResults := c.CheckLine(lineNo, line)
+			lineResults := c.CheckLine(fileLocation, lineNo, line)
 			if lineResults != nil {
 				results = append(results, lineResults...)
 			}
