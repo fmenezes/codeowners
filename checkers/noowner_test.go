@@ -19,6 +19,7 @@ func TestNoOwnerCheck(t *testing.T) {
 	want := []codeowners.CheckResult{
 		{
 			Position: codeowners.Position{
+				FilePath:    "CODEOWNERS",
 				StartLine:   1,
 				StartColumn: 0,
 				EndLine:     1,
@@ -31,7 +32,7 @@ func TestNoOwnerCheck(t *testing.T) {
 	}
 
 	checker := checkers.NoOwner{}
-	got := checker.CheckLine(input.lineNo, input.line)
+	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}

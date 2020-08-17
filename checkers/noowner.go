@@ -12,7 +12,7 @@ func init() {
 type NoOwner struct{}
 
 // CheckLine runs this NoOwner's check against each line
-func (c NoOwner) CheckLine(lineNo int, line string) []codeowners.CheckResult {
+func (c NoOwner) CheckLine(file string, lineNo int, line string) []codeowners.CheckResult {
 	var results []codeowners.CheckResult
 
 	_, owners := codeowners.ParseLine(line)
@@ -21,6 +21,7 @@ func (c NoOwner) CheckLine(lineNo int, line string) []codeowners.CheckResult {
 		results = []codeowners.CheckResult{
 			{
 				Position: codeowners.Position{
+					FilePath:    file,
 					StartLine:   lineNo,
 					EndLine:     lineNo,
 					StartColumn: 0,
