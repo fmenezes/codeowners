@@ -30,6 +30,15 @@ Simply calling `codeowners` will kick off the cli on the current directory.
 | d             | .             | Directory: specifies the directory you want to use to lint the CODEOWNERS file |
 | f             |               | Format: specifies the format you want to return lint results                   |
 
+##### Exit Codes
+
+| Exit Code     | Description                                                      |
+| ------------- | ---------------------------------------------------------------- |
+| 0             | Success: no errors returned                                      |
+| 1             | Warnings: linter returned a few warnings but no errors           |
+| 2             | Errors: linter returned a few errors                             |
+| 3             | Unexpected errors: errors that prevented the linter from running |
+
 ## Compatibility
 
 :warning: This module is on a v0 mode and it is not ready to be used, once it reaches the v1 we will lock the API.

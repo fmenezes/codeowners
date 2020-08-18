@@ -4,7 +4,7 @@ package main
 
 import (
 	"flag"
-	"log"
+	"fmt"
 	"os"
 )
 
@@ -17,8 +17,10 @@ func main() {
 		directory: *dir,
 		format:    *format,
 	}
-
-	if err := run(os.Stdout, opt); err != nil {
-		log.Fatal(err)
+	exitCode := run(os.Stderr, opt)
+	if exitCode == successCode {
+		fmt.Println("Everything ok ;)")
+		return
 	}
+	os.Exit(int(exitCode))
 }

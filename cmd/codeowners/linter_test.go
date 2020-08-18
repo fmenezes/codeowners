@@ -5,104 +5,76 @@ import (
 	"testing"
 )
 
-func testRun(opt options) (string, error) {
+func testRun(opt options) (string, exitCode) {
 	var output bytes.Buffer
-	err := run(&output, opt)
-	if err != nil {
-		return "", err
+	exitCode := run(&output, opt)
+	return output.String(), exitCode
+}
+
+func assertCode(t *testing.T, opt options, want exitCode) {
+	_, got := testRun(opt)
+
+	if got != want {
+		t.Errorf("Input: %v Want: %d Got: %d", opt, want, got)
 	}
-	return output.String(), nil
+}
+
+func assert(t *testing.T, opt options, wantCode exitCode, want string) {
+	got, gotCode := testRun(opt)
+
+	if gotCode != wantCode || got != want {
+		t.Errorf("Input: %v Want: %d '%s' Got: %d '%s'", opt, wantCode, want, gotCode, got)
+	}
 }
 
 func TestPass(t *testing.T) {
-	opt := options{
+	assertCode(t, options{
 		directory: "../../test/data/pass",
 		format:    "",
-	}
-
-	got, err := testRun(opt)
-	if err != nil {
-		t.Error(err)
-	}
-
-	want := `Everything ok ;)
-`
-	if got != want {
-		t.Errorf("Input: %v Want: '%s' Got: '%s'", opt, want, got)
-	}
+	}, successCode)
 }
 
 func TestNoOwners(t *testing.T) {
-	opt := options{
+	assert(t, options{
 		directory: "../../test/data/no_owners",
 		format:    "",
-	}
-
-	got, err := testRun(opt)
-	if err != nil {
-		t.Error(err)
-	}
-
-	want := `1 ::Error:: No owners specified [NoOwner]
-`
-	if got != want {
-		t.Errorf("Input: %v Want: '%s' Got: '%s'", opt, want, got)
-	}
+	}, errorCode, `1 ::Error:: No owners specified [NoOwner]
+`)
 }
 
 func TestCustomFormat(t *testing.T) {
-	opt := options{
+	assert(t, options{
 		directory: "../../test/data/noowners",
 		format:    "test",
-	}
-
-	got, err := testRun(opt)
-	if err != nil {
-		t.Error(err)
-	}
-
-	want := `test`
-	if got != want {
-		t.Errorf("Input: %v Want: '%s' Got: '%s'", opt, want, got)
-	}
+	}, errorCode, `test`)
 }
 
-func TestInvalidFormat(t *testing.T) {
-	opt := options{
+func TestInvalidFormatParse(t *testing.T) {
+	assertCode(t, options{
+		directory: "../../test/data/noowners",
+		format:    "  {{template \"one ",
+	}, unexpectedErrorCode)
+}
+
+func TestInvalidFormatExec(t *testing.T) {
+	assertCode(t, options{
 		directory: "../../test/data/noowners",
 		format:    "  {{template \"one\"}}  ",
-	}
-
-	_, err := testRun(opt)
-	if err == nil {
-		t.Errorf("Should have errored")
-	}
-
-	opt = options{
-		directory: "../../test/data/noowners",
-		format:    "  {{ . ",
-	}
-
-	_, err = testRun(opt)
-	if err == nil {
-		t.Errorf("Should have errored")
-	}
+	}, unexpectedErrorCode)
 }
 
 func TestInvalidDirectory(t *testing.T) {
-	opt := options{
+	assert(t, options{
 		directory: "'",
 		format:    "",
-	}
+	}, errorCode, `0 ::Error:: No CODEOWNERS file found [NoCodeowners]
+`)
+}
 
-	got, err := testRun(opt)
-	if err != nil {
-		t.Error(err)
-	}
-
-	want := `0 ::Error:: No CODEOWNERS file found [NoCodeowners]
-`
-	if got != want {
-		t.Errorf("Input: %v Want: '%s' Got: '%s'", opt, want, got)
-	}
+func TestMultipleCodeOwners(t *testing.T) {
+	assert(t, options{
+		directory: "../../test/data/multiple_codeowners",
+		format:    "",
+	}, warningCode, `0 ::Warning:: Multiple CODEOWNERS files found (CODEOWNERS, docs/CODEOWNERS) [MultipleCodeowners]
+`)
 }
