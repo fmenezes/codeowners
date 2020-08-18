@@ -46,7 +46,8 @@ func TestCustomFormat(t *testing.T) {
 	assert(t, options{
 		directory: "../../test/data/noowners",
 		format:    "test",
-	}, errorCode, `test`)
+	}, errorCode, `test
+`)
 }
 
 func TestInvalidFormatParse(t *testing.T) {
