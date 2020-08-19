@@ -17,11 +17,11 @@ To find package documentation follow https://godoc.org/github.com/fmenezes/codeo
 
 #### Installation
 
-Simply run `go get -u github.com/fmenezes/codeowners/cmd/codeowners`
+Simply run `go get -u github.com/fmenezes/codeowners/cmd/codeownerslint`
 
 #### Usage
 
-Simply calling `codeowners` will kick off the cli on the current directory.
+Simply calling `codeownerslint` will kick off the cli on the current directory.
 
 ##### Options
 
