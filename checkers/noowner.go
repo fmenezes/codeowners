@@ -12,14 +12,14 @@ func init() {
 type NoOwner struct{}
 
 // NewValidator returns validating capabilities for this checker
-func (c NoOwner) NewValidator(options codeowners.CheckerOptions) codeowners.CheckerValidator {
+func (c NoOwner) NewValidator(options codeowners.ValidatorOptions) codeowners.Validator {
 	return noOwnerValidator{
 		options: options,
 	}
 }
 
 type noOwnerValidator struct {
-	options codeowners.CheckerOptions
+	options codeowners.ValidatorOptions
 }
 
 // ValidateLine runs this NoOwner's check against each line

@@ -32,7 +32,7 @@ func TestNoOwnerCheck(t *testing.T) {
 	}
 
 	checker := checkers.NoOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})

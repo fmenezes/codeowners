@@ -19,7 +19,7 @@ type InvalidOwner struct {
 }
 
 // NewValidator returns validating capabilities for this checker
-func (c InvalidOwner) NewValidator(options codeowners.CheckerOptions) codeowners.CheckerValidator {
+func (c InvalidOwner) NewValidator(options codeowners.ValidatorOptions) codeowners.Validator {
 	return invalidOwnerValidator{
 		options: options,
 	}
@@ -51,7 +51,7 @@ func ownerValid(owner string) bool {
 }
 
 type invalidOwnerValidator struct {
-	options codeowners.CheckerOptions
+	options codeowners.ValidatorOptions
 }
 
 // ValidateLine runs this InvalidOwner's check against each line

@@ -35,19 +35,19 @@ func RegisterChecker(name string, checker Checker) error {
 	return nil
 }
 
-// CheckerOptions provide input arguments for checkers to use
-type CheckerOptions struct {
+// ValidatorOptions provide input arguments for checkers to use
+type ValidatorOptions struct {
 	Directory              string
 	CodeownersFileLocation string
 }
 
 // Checker provides tools for validating CODEOWNER file contents
 type Checker interface {
-	NewValidator(options CheckerOptions) CheckerValidator
+	NewValidator(options ValidatorOptions) Validator
 }
 
-// CheckerValidator provides tools for validating CODEOWNER file contents
-type CheckerValidator interface {
+// Validator provides tools for validating CODEOWNER file contents
+type Validator interface {
 	ValidateLine(lineNo int, line string) []CheckResult
 }
 
@@ -99,8 +99,10 @@ type CheckResult struct {
 
 // CheckOptions provides parameters for running a list of checks
 type CheckOptions struct {
-	Directory string
-	Checkers  []string
+	Directory       string
+	Checkers        []string
+	GithubTokenType string
+	GithubToken     string
 }
 
 // Check evaluates the file contents against the checkers and return the results back.
@@ -121,13 +123,13 @@ func Check(options CheckOptions) ([]CheckResult, error) {
 	scanner := bufio.NewScanner(file)
 	lineNo := 0
 
-	startedCheckers := make(map[string]CheckerValidator)
+	validators := make(map[string]Validator)
 	for _, checker := range options.Checkers {
 		c, ok := availableCheckers[checker]
 		if !ok {
 			return nil, fmt.Errorf("'%s' not found", checker)
 		}
-		startedCheckers[checker] = c.NewValidator(CheckerOptions{
+		validators[checker] = c.NewValidator(ValidatorOptions{
 			Directory:              options.Directory,
 			CodeownersFileLocation: fileLocation,
 		})
@@ -136,7 +138,7 @@ func Check(options CheckOptions) ([]CheckResult, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		lineNo++
-		for _, c := range startedCheckers {
+		for _, c := range validators {
 			lineResults := c.ValidateLine(lineNo, line)
 			if lineResults != nil {
 				results = append(results, lineResults...)

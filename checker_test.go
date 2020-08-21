@@ -18,7 +18,7 @@ type dummyCheckerValidator struct {
 	directory              string
 }
 
-func (c dummyChecker) NewValidator(options codeowners.CheckerOptions) codeowners.CheckerValidator {
+func (c dummyChecker) NewValidator(options codeowners.ValidatorOptions) codeowners.Validator {
 	return dummyCheckerValidator{
 		codeownersFileLocation: options.CodeownersFileLocation,
 		directory:              options.Directory,

@@ -32,7 +32,7 @@ func TestInvalidOwnerCheckInvalidLongUsername(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
@@ -66,7 +66,7 @@ func TestInvalidOwnerCheckInvalidNoAt(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
@@ -100,7 +100,7 @@ func TestInvalidOwnerCheckInvalidHyphens(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
@@ -134,7 +134,7 @@ func TestInvalidOwnerCheckInvalidFormat(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
@@ -167,7 +167,7 @@ func TestInvalidOwnerCheckInvalidTrailingHyphen(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
@@ -213,7 +213,7 @@ func TestInvalidOwnerCheckMultipleInvalid(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
@@ -233,7 +233,7 @@ func TestInvalidOwnerCheckPassUser(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
@@ -253,7 +253,7 @@ func TestInvalidOwnerCheckPassEmail(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
@@ -273,7 +273,7 @@ func TestInvalidOwnerCheckPassUserOrg(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	validator := checker.NewValidator(codeowners.CheckerOptions{
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
 	})
