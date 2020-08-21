@@ -15,7 +15,15 @@ func init() {
 }
 
 // InvalidOwner represents checker to decide validate owners in each of CODEOWNERS lines
-type InvalidOwner struct{}
+type InvalidOwner struct {
+}
+
+// NewValidator returns validating capabilities for this checker
+func (c InvalidOwner) NewValidator(options codeowners.CheckerOptions) codeowners.CheckerValidator {
+	return invalidOwnerValidator{
+		options: options,
+	}
+}
 
 func ownerValid(owner string) bool {
 	var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
@@ -42,8 +50,12 @@ func ownerValid(owner string) bool {
 	return true
 }
 
-// CheckLine runs this InvalidOwner's check against each line
-func (c InvalidOwner) CheckLine(file string, lineNo int, line string) []codeowners.CheckResult {
+type invalidOwnerValidator struct {
+	options codeowners.CheckerOptions
+}
+
+// ValidateLine runs this InvalidOwner's check against each line
+func (v invalidOwnerValidator) ValidateLine(lineNo int, line string) []codeowners.CheckResult {
 	var results []codeowners.CheckResult
 
 	_, owners := codeowners.ParseLine(line)
@@ -54,7 +66,7 @@ func (c InvalidOwner) CheckLine(file string, lineNo int, line string) []codeowne
 		}
 		result := codeowners.CheckResult{
 			Position: codeowners.Position{
-				FilePath:    file,
+				FilePath:    v.options.CodeownersFileLocation,
 				StartLine:   lineNo,
 				EndLine:     lineNo,
 				StartColumn: strings.Index(line, owner) + 1,
