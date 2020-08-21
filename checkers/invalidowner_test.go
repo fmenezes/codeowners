@@ -32,7 +32,11 @@ func TestInvalidOwnerCheckInvalidLongUsername(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}
@@ -62,7 +66,11 @@ func TestInvalidOwnerCheckInvalidNoAt(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}
@@ -92,7 +100,11 @@ func TestInvalidOwnerCheckInvalidHyphens(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}
@@ -122,7 +134,11 @@ func TestInvalidOwnerCheckInvalidFormat(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}
@@ -151,7 +167,11 @@ func TestInvalidOwnerCheckInvalidTrailingHyphen(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}
@@ -193,7 +213,11 @@ func TestInvalidOwnerCheckMultipleInvalid(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}
@@ -209,7 +233,11 @@ func TestInvalidOwnerCheckPassUser(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if got != nil {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, nil, got)
 	}
@@ -225,7 +253,11 @@ func TestInvalidOwnerCheckPassEmail(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if got != nil {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, nil, got)
 	}
@@ -241,7 +273,11 @@ func TestInvalidOwnerCheckPassUserOrg(t *testing.T) {
 	}
 
 	checker := checkers.InvalidOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if got != nil {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, nil, got)
 	}

@@ -35,9 +35,20 @@ func RegisterChecker(name string, checker Checker) error {
 	return nil
 }
 
+// ValidatorOptions provide input arguments for checkers to use
+type ValidatorOptions struct {
+	Directory              string
+	CodeownersFileLocation string
+}
+
 // Checker provides tools for validating CODEOWNER file contents
 type Checker interface {
-	CheckLine(file string, lineNo int, line string) []CheckResult
+	NewValidator(options ValidatorOptions) Validator
+}
+
+// Validator provides tools for validating CODEOWNER file contents
+type Validator interface {
+	ValidateLine(lineNo int, line string) []CheckResult
 }
 
 // SeverityLevel exposes all possible levels of severity check results
@@ -86,15 +97,23 @@ type CheckResult struct {
 	CheckName string
 }
 
-// Check evaluates the file contents against the checkers and return the results back.
-func Check(directory string, checkers ...string) ([]CheckResult, error) {
+// CheckOptions provides parameters for running a list of checks
+type CheckOptions struct {
+	Directory       string
+	Checkers        []string
+	GithubTokenType string
+	GithubToken     string
+}
 
-	fileLocation, result := findCodeownersFile(directory)
+// Check evaluates the file contents against the checkers and return the results back.
+func Check(options CheckOptions) ([]CheckResult, error) {
+
+	fileLocation, result := findCodeownersFile(options.Directory)
 	if result != nil {
 		return []CheckResult{*result}, nil
 	}
 
-	file, err := os.Open(fileLocation)
+	file, err := os.Open(filepath.Join(options.Directory, fileLocation))
 	if err != nil {
 		return nil, err
 	}
@@ -103,15 +122,24 @@ func Check(directory string, checkers ...string) ([]CheckResult, error) {
 	results := []CheckResult{}
 	scanner := bufio.NewScanner(file)
 	lineNo := 0
+
+	validators := make(map[string]Validator)
+	for _, checker := range options.Checkers {
+		c, ok := availableCheckers[checker]
+		if !ok {
+			return nil, fmt.Errorf("'%s' not found", checker)
+		}
+		validators[checker] = c.NewValidator(ValidatorOptions{
+			Directory:              options.Directory,
+			CodeownersFileLocation: fileLocation,
+		})
+	}
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		lineNo++
-		for _, checker := range checkers {
-			c, ok := availableCheckers[checker]
-			if !ok {
-				return nil, fmt.Errorf("'%s' not found", checker)
-			}
-			lineResults := c.CheckLine(fileLocation, lineNo, line)
+		for _, c := range validators {
+			lineResults := c.ValidateLine(lineNo, line)
 			if lineResults != nil {
 				results = append(results, lineResults...)
 			}
@@ -139,7 +167,7 @@ func findCodeownersFile(dir string) (string, *CheckResult) {
 		if fileExists(currentFile) {
 			filesFound = append(filesFound, fileLocation)
 			if len(codeownersLocation) == 0 {
-				codeownersLocation = currentFile
+				codeownersLocation = fileLocation
 			}
 		}
 	}

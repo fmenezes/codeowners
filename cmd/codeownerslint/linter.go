@@ -44,7 +44,10 @@ func run(wr io.Writer, opt options) exitCode {
 
 	checkers := codeowners.AvailableCheckers()
 
-	checks, _ := codeowners.Check(dir, checkers...)
+	checks, _ := codeowners.Check(codeowners.CheckOptions{
+		Directory: dir,
+		Checkers:  checkers,
+	})
 
 	code := successCode
 	for _, check := range checks {

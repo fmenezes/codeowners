@@ -32,7 +32,11 @@ func TestNoOwnerCheck(t *testing.T) {
 	}
 
 	checker := checkers.NoOwner{}
-	got := checker.CheckLine("CODEOWNERS", input.lineNo, input.line)
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}

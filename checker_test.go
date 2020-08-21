@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/fmenezes/codeowners"
-	_ "github.com/fmenezes/codeowners/checkers"
 )
 
 const dummyCheckerName string = "dummy"
@@ -14,11 +13,23 @@ const dummyCheckerName string = "dummy"
 type dummyChecker struct {
 }
 
-func (c dummyChecker) CheckLine(file string, lineNo int, line string) []codeowners.CheckResult {
+type dummyCheckerValidator struct {
+	codeownersFileLocation string
+	directory              string
+}
+
+func (c dummyChecker) NewValidator(options codeowners.ValidatorOptions) codeowners.Validator {
+	return dummyCheckerValidator{
+		codeownersFileLocation: options.CodeownersFileLocation,
+		directory:              options.Directory,
+	}
+}
+
+func (c dummyCheckerValidator) ValidateLine(lineNo int, line string) []codeowners.CheckResult {
 	return []codeowners.CheckResult{
 		{
 			Position: codeowners.Position{
-				FilePath:  file,
+				FilePath:  c.codeownersFileLocation,
 				StartLine: lineNo,
 				EndLine:   lineNo,
 			},
@@ -136,7 +147,7 @@ func TestSimpleCheck(t *testing.T) {
 	want := []codeowners.CheckResult{
 		{
 			Position: codeowners.Position{
-				FilePath:    "test/data/pass/CODEOWNERS",
+				FilePath:    "CODEOWNERS",
 				StartLine:   1,
 				StartColumn: 0,
 				EndLine:     1,
@@ -149,7 +160,10 @@ func TestSimpleCheck(t *testing.T) {
 	}
 
 	codeowners.RegisterChecker(dummyCheckerName, dummyChecker{})
-	got, err := codeowners.Check(input, dummyCheckerName)
+	got, err := codeowners.Check(codeowners.CheckOptions{
+		Directory: input,
+		Checkers:  []string{dummyCheckerName},
+	})
 	if err != nil {
 		t.Errorf("Input %s, Error %v", input, err)
 	}
@@ -160,7 +174,9 @@ func TestSimpleCheck(t *testing.T) {
 
 func TestNoProblemsFound(t *testing.T) {
 	input := "./test/data/pass"
-	got, err := codeowners.Check(input)
+	got, err := codeowners.Check(codeowners.CheckOptions{
+		Directory: input,
+	})
 	if err != nil {
 		t.Errorf("Input %s, Error %v", input, err)
 	}
@@ -171,7 +187,10 @@ func TestNoProblemsFound(t *testing.T) {
 
 func TestCheckerNotFound(t *testing.T) {
 	input := "./test/data/pass"
-	_, err := codeowners.Check(input, "NonExistentChecker")
+	_, err := codeowners.Check(codeowners.CheckOptions{
+		Directory: input,
+		Checkers:  []string{"NonExistentChecker"},
+	})
 	if err == nil {
 		t.Error("Should have errored")
 	}
@@ -187,7 +206,10 @@ func TestNoCodeownersCheck(t *testing.T) {
 		},
 	}
 
-	got, err := codeowners.Check(input, dummyCheckerName)
+	got, err := codeowners.Check(codeowners.CheckOptions{
+		Directory: input,
+		Checkers:  []string{dummyCheckerName},
+	})
 	if err != nil {
 		t.Errorf("Input %s, Error %v", input, err)
 	}
@@ -206,7 +228,10 @@ func TestMultipleCodeownersCheck(t *testing.T) {
 		},
 	}
 
-	got, err := codeowners.Check(input, dummyCheckerName)
+	got, err := codeowners.Check(codeowners.CheckOptions{
+		Directory: input,
+		Checkers:  []string{dummyCheckerName},
+	})
 	if err != nil {
 		t.Errorf("Input %s, Error %v", input, err)
 	}
@@ -216,7 +241,10 @@ func TestMultipleCodeownersCheck(t *testing.T) {
 }
 
 func ExampleCheck() {
-	checks, err := codeowners.Check(".", codeowners.AvailableCheckers()...)
+	checks, err := codeowners.Check(codeowners.CheckOptions{
+		Directory: ".",
+		Checkers:  codeowners.AvailableCheckers(),
+	})
 	if err != nil {
 		panic(err)
 	}
