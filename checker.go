@@ -39,6 +39,8 @@ func RegisterChecker(name string, checker Checker) error {
 type ValidatorOptions struct {
 	Directory              string
 	CodeownersFileLocation string
+	GithubTokenType        string
+	GithubToken            string
 }
 
 // Checker provides tools for validating CODEOWNER file contents
@@ -132,6 +134,8 @@ func Check(options CheckOptions) ([]CheckResult, error) {
 		validators[checker] = c.NewValidator(ValidatorOptions{
 			Directory:              options.Directory,
 			CodeownersFileLocation: fileLocation,
+			GithubToken:            options.GithubToken,
+			GithubTokenType:        options.GithubTokenType,
 		})
 	}
 
