@@ -334,3 +334,58 @@ func TestAccessCheckEmailDeny(t *testing.T) {
 		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
 	}
 }
+
+func TestAccessCheckDenyMemo(t *testing.T) {
+	input := []struct {
+		lineNo int
+		line   string
+	}{
+		{
+			lineNo: 1,
+			line:   "filepattern @org/team",
+		},
+		{
+			lineNo: 2,
+			line:   "filepattern2 @org/team",
+		},
+	}
+	want := []codeowners.CheckResult{
+		{
+			Position: codeowners.Position{
+				FilePath:    "CODEOWNERS",
+				StartLine:   1,
+				StartColumn: 13,
+				EndLine:     1,
+				EndColumn:   22,
+			},
+			Message:   "Owner '@org/team' has no write access",
+			Severity:  codeowners.Error,
+			CheckName: "Access",
+		},
+		{
+			Position: codeowners.Position{
+				FilePath:    "CODEOWNERS",
+				StartLine:   2,
+				StartColumn: 14,
+				EndLine:     2,
+				EndColumn:   23,
+			},
+			Message:   "Owner '@org/team' has no write access",
+			Severity:  codeowners.Error,
+			CheckName: "Access",
+		},
+	}
+	checker := checkers.Access{}
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              ".",
+		CodeownersFileLocation: "CODEOWNERS",
+	})
+	got := []codeowners.CheckResult{}
+	for _, inputLine := range input {
+		got = append(got, validator.ValidateLine(inputLine.lineNo, inputLine.line)...)
+	}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Input: %v, Want: %v, Got: %v", input, want, got)
+	}
+}

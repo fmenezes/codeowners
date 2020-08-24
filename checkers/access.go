@@ -18,11 +18,15 @@ type Access struct{}
 
 // NewValidator returns validating capabilities for this checker
 func (c Access) NewValidator(options codeowners.ValidatorOptions) codeowners.Validator {
-	return accessValidator{options: options}
+	return accessValidator{
+		options:    options,
+		accessMemo: make(map[string]bool),
+	}
 }
 
 type accessValidator struct {
-	options codeowners.ValidatorOptions
+	options    codeowners.ValidatorOptions
+	accessMemo map[string]bool
 }
 
 // ValidateLine runs this NoOwner's check against each line
@@ -39,7 +43,11 @@ func (v accessValidator) ValidateLine(lineNo int, line string) []codeowners.Chec
 		if !ownerValid(owner) {
 			continue
 		}
-		writeAccess, _ := ownerHasWriteAccess(v.options, owner)
+		writeAccess, found := v.accessMemo[owner]
+		if !found {
+			writeAccess, _ = ownerHasWriteAccess(v.options, owner)
+			v.accessMemo[owner] = writeAccess
+		}
 		if !writeAccess {
 			result := codeowners.CheckResult{
 				Position: codeowners.Position{
