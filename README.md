@@ -29,7 +29,9 @@ Simply calling `codeownerslint` will kick off the cli on the current directory.
 | ------------- | ------------- | ------------------------------------------------------------------------------ |
 | d             | .             | Directory: specifies the directory you want to use to lint the CODEOWNERS file |
 | f             |               | Format: specifies the format you want to return lint results                   |
-
+| t             |               | Token: specifies the Github's token you want to use                            |
+| tt            | bearer        | Token Type: specifies the Github's token type you want to use                  |
+	
 ##### Exit Codes
 
 | Exit Code     | Description                                                      |
