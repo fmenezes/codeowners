@@ -13,6 +13,8 @@ import (
 type options struct {
 	directory string
 	format    string
+	token     string
+	tokenType string
 }
 
 type exitCode int
@@ -45,8 +47,10 @@ func run(wr io.Writer, opt options) exitCode {
 	checkers := codeowners.AvailableCheckers()
 
 	checks, _ := codeowners.Check(codeowners.CheckOptions{
-		Directory: dir,
-		Checkers:  checkers,
+		Directory:       dir,
+		Checkers:        checkers,
+		GithubToken:     opt.token,
+		GithubTokenType: opt.tokenType,
 	})
 
 	code := successCode
