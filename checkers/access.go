@@ -31,6 +31,10 @@ type accessValidator struct {
 
 // ValidateLine runs this NoOwner's check against each line
 func (v accessValidator) ValidateLine(lineNo int, line string) []codeowners.CheckResult {
+	if len(v.options.GithubToken) == 0 {
+		return nil
+	}
+
 	results := []codeowners.CheckResult{}
 
 	_, owners := codeowners.ParseLine(line)

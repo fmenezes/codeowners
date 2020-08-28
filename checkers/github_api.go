@@ -6,11 +6,11 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
 	"golang.org/x/oauth2"
 )
 
-func (a *accessApi) extractRepoURL() error {
+func (a *accessAPI) extractRepoURL() error {
 	cmd := exec.Command("git", "config", "--get", "remote.origin.url")
 	cmd.Dir = a.directory
 	out, err := cmd.Output()
@@ -21,7 +21,7 @@ func (a *accessApi) extractRepoURL() error {
 	return nil
 }
 
-func (a *accessApi) initiateClient() {
+func (a *accessAPI) initiateClient() {
 	tokenSource := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: a.token, TokenType: a.tokenType},
 	)
@@ -29,4 +29,4 @@ func (a *accessApi) initiateClient() {
 	a.client = github.NewClient(oauthClient)
 }
 
-func (a *accessApi) terminateClient() {}
+func (a *accessAPI) terminateClient() {}

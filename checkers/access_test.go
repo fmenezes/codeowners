@@ -35,6 +35,7 @@ func TestAccessCheck(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
@@ -69,6 +70,7 @@ func TestAccessCheckError(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
@@ -88,6 +90,7 @@ func TestAccessCheckPass(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if got != nil {
@@ -107,6 +110,7 @@ func TestAccessCheckPassInvalidOwners(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if got != nil {
@@ -126,6 +130,26 @@ func TestAccessCheckPassNoOwners(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
+	if got != nil {
+		t.Errorf("Input: %v, Want: %v, Got: %v", input, nil, got)
+	}
+}
+
+func TestAccessCheckNoTokenPass(t *testing.T) {
+	input := struct {
+		lineNo int
+		line   string
+	}{
+		lineNo: 1,
+		line:   "filepattern @ownerWithAccess",
+	}
+	checker := checkers.Access{}
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              "bad",
+		CodeownersFileLocation: "bad",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if got != nil {
@@ -159,6 +183,7 @@ func TestAccessCheckInvalidDir(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              "bad",
 		CodeownersFileLocation: "bad",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
@@ -192,6 +217,7 @@ func TestAccessCheckNoCollaborator(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
@@ -225,6 +251,7 @@ func TestAccessCheckIsCollaboratorError(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
@@ -244,6 +271,7 @@ func TestAccessCheckTeamPass(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if got != nil {
@@ -277,6 +305,7 @@ func TestAccessCheckTeamDeny(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
@@ -296,6 +325,7 @@ func TestAccessCheckEmailPass(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if got != nil {
@@ -328,6 +358,7 @@ func TestAccessCheckEmailDeny(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := validator.ValidateLine(input.lineNo, input.line)
 	if !reflect.DeepEqual(got, want) {
@@ -379,6 +410,7 @@ func TestAccessCheckDenyMemo(t *testing.T) {
 	validator := checker.NewValidator(codeowners.ValidatorOptions{
 		Directory:              ".",
 		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
 	})
 	got := []codeowners.CheckResult{}
 	for _, inputLine := range input {

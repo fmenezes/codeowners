@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/fmenezes/codeowners"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
 )
 
-type accessApi struct {
+type accessAPI struct {
 	directory   string
 	tokenType   string
 	token       string
@@ -23,27 +23,32 @@ type accessApi struct {
 	ctx    context.Context
 }
 
-func (a *accessApi) extractRepoData() {
+func (a *accessAPI) extractRepoData() {
 	r := regexp.MustCompile(`github.com[\:\/]([A-Za-z0-9-]+)\/([A-Za-z0-9-]+)\.git`)
 	data := r.FindStringSubmatch(a.repoURL)
 	a.repoOwner = data[1]
 	a.repoName = data[2]
 }
 
-func (a accessApi) fetchTeamAccess(org, team string) (string, error) {
-	teams, _, err := a.client.Repositories.ListTeams(a.ctx, a.repoOwner, a.repoName, nil)
+func (a accessAPI) fetchTeamAccess(org, team string) (string, error) {
+	repo, _, err := a.client.Teams.IsTeamRepoBySlug(a.ctx, org, team, a.repoOwner, a.repoName)
 	if err != nil {
 		return "", err
 	}
-	for _, t := range teams {
-		if t.GetOrganization().GetLogin() == org && t.GetSlug() == team {
-			return t.GetPermission(), nil
-		}
+	data := repo.GetPermissions()
+	if data["admin"] {
+		return "admin", nil
+	}
+	if data["maintain"] {
+		return "maintain", nil
+	}
+	if data["push"] {
+		return "push", nil
 	}
 	return "none", nil
 }
 
-func (a accessApi) hasWriteAccess() bool {
+func (a accessAPI) hasWriteAccess() bool {
 	switch a.accessLevel {
 	case "admin", "push", "maintain", "write", "email": // allowing emails to pass
 		return true
@@ -51,7 +56,7 @@ func (a accessApi) hasWriteAccess() bool {
 	return false
 }
 
-func (a accessApi) fetchUserAccess(user string) (string, error) {
+func (a accessAPI) fetchUserAccess(user string) (string, error) {
 	isCollaborator, _, err := a.client.Repositories.IsCollaborator(a.ctx, a.repoOwner, a.repoName, user)
 	if err != nil {
 		return "", err
@@ -66,7 +71,7 @@ func (a accessApi) fetchUserAccess(user string) (string, error) {
 	return permissionLevel.GetPermission(), nil
 }
 
-func (a accessApi) findUserFromEmail(email string) (string, error) {
+func (a accessAPI) findUserFromEmail(email string) (string, error) {
 	res, _, err := a.client.Search.Users(a.ctx, fmt.Sprintf("%s in:email type:user", email), nil)
 	if err != nil {
 		return "", err
@@ -77,7 +82,7 @@ func (a accessApi) findUserFromEmail(email string) (string, error) {
 	return "", nil
 }
 
-func (a *accessApi) fetchAccess(user string) error {
+func (a *accessAPI) fetchAccess(user string) error {
 	var err error
 	login := ""
 	if string(user[0]) == "@" {
@@ -113,7 +118,7 @@ func (a *accessApi) fetchAccess(user string) error {
 }
 
 func ownerHasWriteAccess(options codeowners.ValidatorOptions, user string) (bool, error) {
-	a := accessApi{
+	a := accessAPI{
 		ctx:       context.Background(),
 		directory: options.Directory,
 		token:     options.GithubToken,
