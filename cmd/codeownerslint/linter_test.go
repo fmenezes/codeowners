@@ -38,7 +38,7 @@ func TestNoOwners(t *testing.T) {
 	assert(t, options{
 		directory: "../../test/data/no_owners",
 		format:    "",
-	}, errorCode, `1 ::Error:: No owners specified [NoOwner]
+	}, errorCode, `CODEOWNERS 1 ::Error:: No owners specified [NoOwner]
 `)
 }
 
@@ -68,7 +68,7 @@ func TestInvalidDirectory(t *testing.T) {
 	assert(t, options{
 		directory: "'",
 		format:    "",
-	}, errorCode, `0 ::Error:: No CODEOWNERS file found [NoCodeowners]
+	}, errorCode, `CODEOWNERS 0 ::Error:: No CODEOWNERS file found [NoCodeowners]
 `)
 }
 
@@ -76,6 +76,6 @@ func TestMultipleCodeOwners(t *testing.T) {
 	assert(t, options{
 		directory: "../../test/data/multiple_codeowners",
 		format:    "",
-	}, warningCode, `0 ::Warning:: Multiple CODEOWNERS files found (CODEOWNERS, docs/CODEOWNERS) [MultipleCodeowners]
+	}, warningCode, `CODEOWNERS 0 ::Warning:: Multiple CODEOWNERS files found (CODEOWNERS, docs/CODEOWNERS) [MultipleCodeowners]
 `)
 }

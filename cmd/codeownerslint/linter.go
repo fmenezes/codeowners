@@ -33,7 +33,7 @@ func run(wr io.Writer, opt options) exitCode {
 		return unexpectedErrorCode
 	}
 
-	format := "{{ .Position }} ::{{ .Severity }}:: {{ .Message }} [{{ .CheckName }}]"
+	format := "{{ .Position.Format }} ::{{ .Severity.Name }}:: {{ .Message }} [{{ .CheckName }}]"
 	if len(opt.format) > 0 {
 		format = opt.format
 	}
