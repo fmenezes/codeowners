@@ -65,77 +65,83 @@ func TestRegisterCheckerAgain(t *testing.T) {
 }
 
 func TestSeverityLevelLabels(t *testing.T) {
-	if codeowners.Error.String() != "Error" {
+	if codeowners.Error.Name() != "Error" {
 		t.Errorf("codeowners.Error.String() should evaluate to 'Error'")
 	}
-	if codeowners.Warning.String() != "Warning" {
+	if codeowners.Warning.Name() != "Warning" {
 		t.Errorf("codeowners.Warning.String() should evaluate to 'Warning'")
 	}
 }
 
-func TestPositionString(t *testing.T) {
+func TestPositionFormat(t *testing.T) {
 	testCases := []struct {
 		input codeowners.Position
 		want  string
 	}{
 		{
 			input: codeowners.Position{
+				FilePath:    "CODEOWNERS",
 				StartLine:   1,
 				StartColumn: 1,
 				EndLine:     2,
 				EndColumn:   2,
 			},
-			want: "1:1-2:2",
+			want: "CODEOWNERS 1:1-2:2",
 		},
 		{
 			input: codeowners.Position{
+				FilePath:    "CODEOWNERS",
 				StartLine:   1,
 				StartColumn: 1,
 				EndLine:     1,
 				EndColumn:   2,
 			},
-			want: "1:1-2",
+			want: "CODEOWNERS 1:1-2",
 		},
 		{
 			input: codeowners.Position{
+				FilePath:    "CODEOWNERS",
 				StartLine:   1,
 				StartColumn: 1,
 				EndLine:     1,
 				EndColumn:   1,
 			},
-			want: "1:1",
+			want: "CODEOWNERS 1:1",
 		},
 		{
 			input: codeowners.Position{
+				FilePath:    "CODEOWNERS",
 				StartLine:   1,
 				StartColumn: 0,
 				EndLine:     1,
 				EndColumn:   0,
 			},
-			want: "1",
+			want: "CODEOWNERS 1",
 		},
 		{
 			input: codeowners.Position{
+				FilePath:    "CODEOWNERS",
 				StartLine:   1,
 				StartColumn: 0,
 				EndLine:     0,
 				EndColumn:   0,
 			},
-			want: "1",
+			want: "CODEOWNERS 1",
 		},
 		{
 			input: codeowners.Position{
+				FilePath:    "CODEOWNERS",
 				StartLine:   0,
 				StartColumn: 0,
 				EndLine:     0,
 				EndColumn:   0,
 			},
-			want: "0",
+			want: "CODEOWNERS 0",
 		},
 	}
 
 	for _, testCase := range testCases {
-		got := testCase.input.String()
+		got := testCase.input.Format()
 		if got != testCase.want {
 			t.Errorf("Input: %v, Want: %v, Got: %v", testCase.input, testCase.want, got)
 		}
@@ -200,6 +206,9 @@ func TestNoCodeownersCheck(t *testing.T) {
 	input := "./test/data"
 	want := []codeowners.CheckResult{
 		{
+			Position: codeowners.Position{
+				FilePath: "CODEOWNERS",
+			},
 			Message:   "No CODEOWNERS file found",
 			Severity:  codeowners.Error,
 			CheckName: "NoCodeowners",
@@ -222,6 +231,9 @@ func TestMultipleCodeownersCheck(t *testing.T) {
 	input := "./test/data/multiple_codeowners"
 	want := []codeowners.CheckResult{
 		{
+			Position: codeowners.Position{
+				FilePath: "CODEOWNERS",
+			},
 			Message:   "Multiple CODEOWNERS files found (CODEOWNERS, docs/CODEOWNERS)",
 			Severity:  codeowners.Warning,
 			CheckName: "MultipleCodeowners",
@@ -249,8 +261,8 @@ func ExampleCheck() {
 		panic(err)
 	}
 	for _, check := range checks {
-		fmt.Printf("%s ::%s:: %s [%s]\n", check.Position, check.Severity, check.Message, check.CheckName)
+		fmt.Printf("%s ::%s:: %s [%s]\n", check.Position.Format(), check.Severity.Name(), check.Message, check.CheckName)
 	}
 	//Output:
-	//0 ::Error:: No CODEOWNERS file found [NoCodeowners]
+	//CODEOWNERS 0 ::Error:: No CODEOWNERS file found [NoCodeowners]
 }
