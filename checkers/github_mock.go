@@ -71,9 +71,14 @@ func mockedServer(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	teamUrlRegex := regexp.MustCompile(`/repos/([^/]+)/([^/]+)/teams$`)
+	teamUrlRegex := regexp.MustCompile(`/orgs/([^/]+)/teams/([^/]+)/repos/([^/]+)/([^/]+)$`)
 	parts = teamUrlRegex.FindStringSubmatch(r.URL.String())
+
 	if len(parts) > 0 {
+		if parts[2] == "denyTeam" {
+			w.WriteHeader(404)
+			return
+		}
 		h.Add("Content-Type", "application/json")
 		w.WriteHeader(200)
 		c, _ := ioutil.ReadFile(filepath.Join("..", "test", "fixtures", "team", "pass.json"))

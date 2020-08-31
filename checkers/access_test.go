@@ -285,7 +285,7 @@ func TestAccessCheckTeamDeny(t *testing.T) {
 		line   string
 	}{
 		lineNo: 1,
-		line:   "filepattern @org/team",
+		line:   "filepattern @org/denyTeam",
 	}
 	want := []codeowners.CheckResult{
 		{
@@ -294,9 +294,9 @@ func TestAccessCheckTeamDeny(t *testing.T) {
 				StartLine:   1,
 				StartColumn: 13,
 				EndLine:     1,
-				EndColumn:   22,
+				EndColumn:   26,
 			},
-			Message:   "Owner '@org/team' has no write access",
+			Message:   "Owner '@org/denyTeam' has no write access",
 			Severity:  codeowners.Error,
 			CheckName: "Access",
 		},
@@ -373,11 +373,11 @@ func TestAccessCheckDenyMemo(t *testing.T) {
 	}{
 		{
 			lineNo: 1,
-			line:   "filepattern @org/team",
+			line:   "filepattern @org/denyTeam",
 		},
 		{
 			lineNo: 2,
-			line:   "filepattern2 @org/team",
+			line:   "filepattern2 @org/denyTeam",
 		},
 	}
 	want := []codeowners.CheckResult{
@@ -387,9 +387,9 @@ func TestAccessCheckDenyMemo(t *testing.T) {
 				StartLine:   1,
 				StartColumn: 13,
 				EndLine:     1,
-				EndColumn:   22,
+				EndColumn:   26,
 			},
-			Message:   "Owner '@org/team' has no write access",
+			Message:   "Owner '@org/denyTeam' has no write access",
 			Severity:  codeowners.Error,
 			CheckName: "Access",
 		},
@@ -399,9 +399,9 @@ func TestAccessCheckDenyMemo(t *testing.T) {
 				StartLine:   2,
 				StartColumn: 14,
 				EndLine:     2,
-				EndColumn:   23,
+				EndColumn:   27,
 			},
-			Message:   "Owner '@org/team' has no write access",
+			Message:   "Owner '@org/denyTeam' has no write access",
 			Severity:  codeowners.Error,
 			CheckName: "Access",
 		},
