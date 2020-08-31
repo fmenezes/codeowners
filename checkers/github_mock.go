@@ -11,10 +11,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
 )
 
-func (a *accessApi) extractRepoURL() error {
+func (a *accessAPI) extractRepoURL() error {
 	if a.directory == "bad" {
 		return errors.New("Mocked error")
 	}
@@ -71,9 +71,14 @@ func mockedServer(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	teamUrlRegex := regexp.MustCompile(`/repos/([^/]+)/([^/]+)/teams$`)
+	teamUrlRegex := regexp.MustCompile(`/orgs/([^/]+)/teams/([^/]+)/repos/([^/]+)/([^/]+)$`)
 	parts = teamUrlRegex.FindStringSubmatch(r.URL.String())
+
 	if len(parts) > 0 {
+		if parts[2] == "denyTeam" {
+			w.WriteHeader(404)
+			return
+		}
 		h.Add("Content-Type", "application/json")
 		w.WriteHeader(200)
 		c, _ := ioutil.ReadFile(filepath.Join("..", "test", "fixtures", "team", "pass.json"))
@@ -94,12 +99,12 @@ func mockedServer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a *accessApi) initiateClient() {
+func (a *accessAPI) initiateClient() {
 	server = httptest.NewServer(http.HandlerFunc(mockedServer))
 	client, _ := github.NewEnterpriseClient(server.URL, server.URL, nil)
 	a.client = client
 }
 
-func (a *accessApi) terminateClient() {
+func (a *accessAPI) terminateClient() {
 	server.Close()
 }
