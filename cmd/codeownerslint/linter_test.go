@@ -50,6 +50,14 @@ func TestCustomFormat(t *testing.T) {
 `)
 }
 
+func TestCustomFormatFunc(t *testing.T) {
+	assert(t, options{
+		directory: "../../test/data/noowners",
+		format:    "{{ToLower .Position.FilePath}}",
+	}, errorCode, `codeowners
+`)
+}
+
 func TestInvalidFormatParse(t *testing.T) {
 	assertCode(t, options{
 		directory: "../../test/data/noowners",
