@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/fmenezes/codeowners"
@@ -38,7 +39,10 @@ func run(wr io.Writer, opt options) exitCode {
 		format = opt.format
 	}
 	format = fmt.Sprintf("%s\n", format)
-	tpl, err := template.New("main").Parse(format)
+	tpl, err := template.New("main").Funcs(template.FuncMap{
+		"ToLower": strings.ToLower,
+		"ToUpper": strings.ToUpper,
+	}).Parse(format)
 	if err != nil {
 		fmt.Fprintf(wr, "Unexpected error when parsing format: %v", err)
 		return unexpectedErrorCode
