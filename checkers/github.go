@@ -24,7 +24,7 @@ type accessAPI struct {
 }
 
 func (a *accessAPI) extractRepoData() {
-	r := regexp.MustCompile(`github.com[\:\/]([A-Za-z0-9-]+)\/([A-Za-z0-9-]+)\.git`)
+	r := regexp.MustCompile(`github\.com[\:\/]([A-Za-z0-9-]+)\/([A-Za-z0-9-]+)(?:\.git)?$`)
 	data := r.FindStringSubmatch(a.repoURL)
 	a.repoOwner = data[1]
 	a.repoName = data[2]

@@ -138,6 +138,25 @@ func TestAccessCheckPassNoOwners(t *testing.T) {
 	}
 }
 
+func TestAccessCheckPassHttpGitConfig(t *testing.T) {
+	input := struct {
+		lineNo int
+		line   string
+	}{
+		lineNo: 1,
+		line:   "filepattern @ownerWithAccess",
+	}
+	checker := checkers.Access{}
+	validator := checker.NewValidator(codeowners.ValidatorOptions{
+		Directory:              "http",
+		CodeownersFileLocation: "CODEOWNERS",
+		GithubToken:            "token",
+	})
+	got := validator.ValidateLine(input.lineNo, input.line)
+	if got != nil {
+		t.Errorf("Input: %v, Want: %v, Got: %v", input, nil, got)
+	}
+}
 func TestAccessCheckNoTokenPass(t *testing.T) {
 	input := struct {
 		lineNo int
