@@ -18,6 +18,10 @@ func (a *accessAPI) extractRepoURL() error {
 	if a.directory == "bad" {
 		return errors.New("Mocked error")
 	}
+	if a.directory == "http" {
+		a.repoURL = "http://github.com/owner/repo"
+		return nil
+	}
 	a.repoURL = "git@github.com:owner/repo.git"
 	return nil
 }
